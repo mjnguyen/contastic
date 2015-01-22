@@ -1,0 +1,66 @@
+<div class="jumbotron" data-ng-init="init()">
+  <div id="logo">
+    <p>
+      Let's see who of all your connections are most likely to hire you.  This is a simple application that will inspect all your
+    LinkedIn Connections(Contacts) using the Connections API.  The ranking will be determined by the contact's number of contacts that person has. In addition, the the person's title and pictureUrl has some influence on the ranking as well.  
+
+  </p>
+    <p>This example demonstrates how to retrieve a user's connections.  It also uses the LinkedIn auth events (load, login, logout) to control behavior.  Login using the button in the upper left of the screen to begin.</p>
+
+    <!-- NOTE: be sure to set onLoad: onLinkedInLoad -->
+    <script type="text/javascript">
+
+    var profile = null;
+
+    function onLinkedInLoad() {
+      IN.Event.on(IN, "auth", function() {onLinkedInLogin();});
+      IN.Event.on(IN, "logout", function() {onLinkedInLogout();});
+    }
+
+    function onLinkedInLogout() {
+      setConnections({}, {total:0});
+    }
+
+    //execute on login event
+    function onLinkedInLogin() {
+     // pass user info to angular
+     
+        IN.API.Profile("me")
+        .fields(['firstName', 'lastName', 'numConnections', 'industry', 'headline', 'pictureUrl', 'location', 'suggestions'])
+        .result(function(data, metadata) {
+          profile = data.values[0];
+
+          var appBody = angular.element(document.getElementById("appBody"));
+          appBody.scope().$apply(
+            function($scope) {
+              console.log("Calling loadData" + profile);
+              $scope.loadData(profile);
+            });
+
+
+        });
+
+    }
+
+    </script>
+
+    <hr>
+    <div class="container" id="appBody">
+      <div class="row">
+        <div class="col-xs-8 col-md-4" ng-repeat="connection in connections | orderBy:['score', profileImageUrl]: true | filter: hotResultsFilter" >
+          <button popover-placement="top" popover="{{showProfile(connection)}}"  popover-trigger="mouseenter" class="btn btn-default">
+            <img ng-src="{{connection.profileImageUrl}}" height="80"></img>
+          </button>
+          
+          <div>
+          {{connection.firstName}} {{connection.lastName}}
+          </div>
+          <div>
+          Rank: {{connection.rank}}%
+          </div>
+          <div style='clear: both;'>&nbsp;</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
