@@ -47,7 +47,7 @@
     <hr>
     <div class="container" id="appBody">
       <div class="row">
-        <div class="col-xs-8 col-md-4" ng-repeat="connection in connections | orderBy:['score', profileImageUrl]: true | filter: hotResultsFilter" >
+        <div class="col-xs-8 col-md-4" ng-repeat="connection in connections | limitTo: 10 | orderBy:['score', profileImageUrl]: true | filter: hotResultsFilter" >
           <a ng-href="{{connection.publicProfileUrl}} "popover-placement="top" popover="{{showProfile(connection)}}"  popover-trigger="mouseenter" class="btn btn-default" target="_blank">
             <img ng-src="{{connection.profileImageUrl}}" height="80"></img>
           </a>
