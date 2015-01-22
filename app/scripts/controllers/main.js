@@ -33,6 +33,45 @@
  				return !isPrivate;
  			};
 
+
+ 			// Scoring Methods
+ 			$scope.titleScore = function(profile) {
+ 				var score = 0;
+				if (profile.headline) {
+					var headline = profile.headline;
+					if (headline.match(/hiring/)) {
+						score += 60
+					}
+					else if (headline.match(/recruiter/i)) {
+						score += 55;
+					}
+					else if (headline.match(/Human resources|HR/i)) {
+						score += 50;
+					}
+					else if (headline.match(/Manager/i)) {
+						score += 40;
+					}
+					else if (headline.match(/CEO|CTO|CFO|CMO/i)) {
+						score += 30;
+					}
+				} 
+
+				return score;				
+ 			}
+
+ 			$scope.locationScore = function(profile1, profile2) {
+				var score = 0;
+				if (profile2.location) {
+					if (profile2.location.country.code) {
+						if (profile1.location.country.code == profile2.location.country.code) {
+							score += 20;
+						}
+					}
+				} 	
+
+				return score;			
+ 			}
+
  			$scope.loadData = function(profile) {
  				IN.API.Connections("me")
  				.fields(['firstName', 'lastName', 'numConnections', 'industry', 'headline', 'pictureUrl', 'location', 'suggestions'])
@@ -50,48 +89,24 @@
  							pictureScore = 1;
  						}
 
- 						var miscScore = 0;
- 						if (connection.headline) {
- 							var headline = connection.headline;
- 							if (headline.match(/hiring/)) {
- 								miscScore += 60
- 							}
- 							else if (headline.match(/recruiter/i)) {
- 								miscScore += 55;
- 							}
- 							else if (headline.match(/Human resources|HR/i)) {
- 								miscScore += 50;
- 							}
- 							else if (headline.match(/Manager/i)) {
- 								miscScore += 40;
- 							}
- 							else if (headline.match(/CEO|CTO|CFO|CMO/i)) {
- 								miscScore += 30;
- 							}
- 						}
+ 						var titleScore = $scope.titleScore(connection);
+ 						var locationScore = $scope.locationScore(profile, connection);
 
- 						var locationScore = 0;
- 						if (connection.location) {
- 							if (connection.location.country.code) {
- 								if (profile.location.country.code == connection.location.country.code) {
- 									locationScore += 20;
- 								}
- 							}
- 						}
+	 					// other factors to consider (industry, shared groups)
 
-	 			// other factors to consider (industry, shared groups)
+			 			connection.score = Math.floor((connection.numConnections * 0.50 + pictureScore * 0.10 +  titleScore * 0.30 + locationScore * 0.10) ) ;
+			 			connection.rank = Math.floor(connection.score / 581 * 10000)/100 ;
+			 			$scope.connections.push(connection);
+			 		}
+	 				$scope.$apply();
+			 	});
+			};
 
-	 			connection.score = Math.floor((connection.numConnections * 0.50 + pictureScore * 0.10 +  miscScore * 0.30 + locationScore * 0.10) ) ;
-	 			connection.rank = Math.floor(connection.score / 581 * 10000)/100 ;
-	 			$scope.connections.push(connection);
-	 		}
-	 		$scope.$apply();
-	 	});
-	};
+			// This could be expanded to show more information
+			$scope.showProfile = function (profile) {
+				return profile.headline;
+			};
 
-	$scope.showProfile = function (profile) {
-		return profile.headline;
-	};
 
 	 // reserved for REST API calls in place of the JSAPI
 	/* Following this API call example, get the access token:
