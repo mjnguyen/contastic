@@ -74,7 +74,7 @@
 
  			$scope.loadData = function(profile) {
  				IN.API.Connections("me")
- 				.fields(['firstName', 'lastName', 'numConnections', 'industry', 'headline', 'pictureUrl', 'location', 'suggestions'])
+ 				.fields(['firstName', 'lastName', 'numConnections', 'industry', 'headline', 'pictureUrl', 'location', 'suggestions', 'public-profile-url'])
  				.params({"count":500, "sort" : 'connections'})
  				.result(function(result, metadata) {
 

@@ -26,7 +26,7 @@
      // pass user info to angular
      
         IN.API.Profile("me")
-        .fields(['firstName', 'lastName', 'numConnections', 'industry', 'headline', 'pictureUrl', 'location', 'suggestions'])
+        .fields(['firstName', 'lastName', 'numConnections', 'industry', 'headline', 'pictureUrl', 'location', 'suggestions', 'public-profile-url'])
         .result(function(data, metadata) {
           profile = data.values[0];
 
@@ -48,9 +48,9 @@
     <div class="container" id="appBody">
       <div class="row">
         <div class="col-xs-8 col-md-4" ng-repeat="connection in connections | orderBy:['score', profileImageUrl]: true | filter: hotResultsFilter" >
-          <button popover-placement="top" popover="{{showProfile(connection)}}"  popover-trigger="mouseenter" class="btn btn-default">
+          <a ng-href="{{connection.publicProfileUrl}} "popover-placement="top" popover="{{showProfile(connection)}}"  popover-trigger="mouseenter" class="btn btn-default" target="_blank">
             <img ng-src="{{connection.profileImageUrl}}" height="80"></img>
-          </button>
+          </a>
           
           <div>
           {{connection.firstName}} {{connection.lastName}}
